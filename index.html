@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ajinkya | Game Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #05050f;
+  --surface: rgba(255,255,255,0.04);
+  --surface-hover: rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.08);
+  --border-glow: rgba(99,102,241,0.5);
+  --text: #e8e8ff;
+  --muted: #8888aa;
+  --accent1: #6366f1;   /* indigo */
+  --accent2: #a855f7;   /* purple */
+  --accent3: #06b6d4;   /* cyan */
+  --accent4: #f43f5e;   /* rose */
+  --accent5: #10b981;   /* emerald */
+  --accent6: #f59e0b;   /* amber */
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── CANVAS BG ───────────────────────────────────────── */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ─── NAV ─────────────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 40px;
+  background: rgba(5,5,15,0.7);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  background: linear-gradient(135deg, var(--accent1), var(--accent3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--text); }
+
+/* ─── HERO ────────────────────────────────────────────── */
+#hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 100px 24px 60px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(99,102,241,0.15);
+  border: 1px solid rgba(99,102,241,0.35);
+  color: #a5b4fc;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 7px 18px;
+  border-radius: 100px;
+  margin-bottom: 28px;
+  animation: fadeInDown 0.6s ease both;
+}
+
+.hero-badge::before { content: '●'; color: var(--accent5); font-size: 0.6rem; }
+
+.hero-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(3.5rem, 9vw, 7rem);
+  line-height: 1.05;
+  letter-spacing: -2px;
+  background: linear-gradient(135deg, #fff 0%, #a5b4fc 40%, var(--accent3) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeInUp 0.7s 0.1s ease both;
+}
+
+.hero-sub {
+  font-size: 1.3rem;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: 16px;
+  animation: fadeInUp 0.7s 0.2s ease both;
+}
+
+.hero-sub strong { color: var(--accent3); font-weight: 600; }
+
+.hero-cta {
+  display: flex;
+  gap: 14px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeInUp 0.7s 0.35s ease both;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.25s;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color: white;
+  box-shadow: 0 4px 24px rgba(99,102,241,0.35);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(99,102,241,0.55);
+}
+
+.btn-ghost {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-ghost:hover {
+  background: var(--surface-hover);
+  border-color: rgba(255,255,255,0.15);
+  transform: translateY(-2px);
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(6px); }
+}
+
+/* ─── SECTIONS ────────────────────────────────────────── */
+section {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 90px 24px;
+}
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent1);
+  margin-bottom: 16px;
+}
+
+.section-label::before { content: ''; width: 28px; height: 2px; background: var(--accent1); }
+
+.section-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: -1px;
+  line-height: 1.15;
+  margin-bottom: 10px;
+}
+
+.section-desc {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 540px;
+  line-height: 1.7;
+  margin-bottom: 52px;
+}
+
+/* ─── ABOUT ───────────────────────────────────────────── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+@media (max-width: 700px) { .about-grid { grid-template-columns: 1fr; } }
+
+.about-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  transition: all 0.3s;
+}
+
+.about-card:hover {
+  background: var(--surface-hover);
+  border-color: rgba(99,102,241,0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+
+.about-card-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 18px;
+}
+
+.icon-bg-1 { background: rgba(99,102,241,0.2); }
+.icon-bg-2 { background: rgba(168,85,247,0.2); }
+.icon-bg-3 { background: rgba(6,182,212,0.2); }
+.icon-bg-4 { background: rgba(16,185,129,0.2); }
+
+.about-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.about-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
+
+/* ─── SKILLS ──────────────────────────────────────────── */
+.skills-container { display: flex; flex-direction: column; gap: 20px; }
+
+.skill-row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.skill-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 100px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: all 0.25s;
+  cursor: default;
+}
+
+.chip-1 { background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.3); color: #a5b4fc; }
+.chip-2 { background: rgba(168,85,247,0.12); border-color: rgba(168,85,247,0.3); color: #d8b4fe; }
+.chip-3 { background: rgba(6,182,212,0.12); border-color: rgba(6,182,212,0.3); color: #67e8f9; }
+.chip-4 { background: rgba(244,63,94,0.12); border-color: rgba(244,63,94,0.3); color: #fda4af; }
+.chip-5 { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3); color: #6ee7b7; }
+.chip-6 { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3); color: #fcd34d; }
+
+.skill-chip:hover { transform: scale(1.05); filter: brightness(1.2); }
+
+/* ─── EXPERIENCE ───────────────────────────────────── */
+.experience-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.experience-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  transition: all 0.3s;
+}
+
+.experience-card:hover {
+  background: var(--surface-hover);
+  border-color: rgba(99,102,241,0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+
+.experience-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+}
+
+.experience-content {
+  flex: 1;
+}
+
+.experience-role {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.experience-company {
+  font-size: 0.95rem;
+  color: var(--accent3);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.experience-duration {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* ─── GAMES ───────────────────────────────────────────── */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.game-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(99,102,241,0.4);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+.game-preview {
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+  background: linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95);
+}
+
+.game-preview-1 {
+  background: linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95);
+}
+.game-preview-2 {
+  background: linear-gradient(135deg, #0c4a6e, #0e7490, #065f46);
+}
+
+.game-preview-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.4s ease;
+  display: block;
+}
+
+.game-card:hover .game-preview-img {
+  transform: scale(1.07);
+}
+
+.game-preview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 50%, rgba(5,5,15,0.85));
+  z-index: 1;
+}
+
+.game-preview-emoji {
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 0 30px rgba(255,255,255,0.3));
+  /* shown as fallback when no image */
+  display: none;
+}
+
+.floating-preview-badge {
+  position: absolute;
+  top: 14px; right: 14px;
+  z-index: 3;
+  background: rgba(5,5,15,0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 4px 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--accent5);
+  text-transform: uppercase;
+}
+
+.game-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+
+.game-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.game-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: rgba(99,102,241,0.15);
+  color: #a5b4fc;
+}
+
+.game-body h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.game-body p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.7;
+  flex: 1;
+  margin-bottom: 20px;
+}
+
+.game-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.game-meta span { display: flex; align-items: center; gap: 5px; }
+
+.game-links { display: flex; gap: 10px; }
+
+.game-link {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.game-link-primary {
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color: white;
+}
+
+.game-link-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.game-link-secondary {
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.game-link-secondary:hover {
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-1px);
+}
+
+/* ─── STATS ───────────────────────────────────────────── */
+.stats-bar {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(168,85,247,0.08));
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 50px 24px;
+}
+
+.stats-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 20px;
+  text-align: center;
+}
+
+@media (max-width: 700px) { .stats-inner { grid-template-columns: repeat(2,1fr); } }
+
+.stat-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent1), var(--accent3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label { font-size: 0.85rem; color: var(--muted); margin-top: 4px; letter-spacing: 1px; }
+
+/* ─── RESUME ──────────────────────────────────────────── */
+.resume-card {
+  background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.1));
+  border: 1px solid rgba(99,102,241,0.25);
+  border-radius: 24px;
+  padding: 52px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.resume-icon {
+  width: 80px; height: 80px;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  box-shadow: 0 8px 30px rgba(99,102,241,0.4);
+}
+
+/* ─── CONTACT ─────────────────────────────────────────── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 24px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.25s;
+}
+
+.contact-item:hover {
+  background: var(--surface-hover);
+  border-color: rgba(99,102,241,0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+}
+
+.contact-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.contact-label { font-size: 0.75rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+.contact-value { font-size: 0.95rem; font-weight: 500; margin-top: 2px; }
+
+/* ─── FOOTER ──────────────────────────────────────────── */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 36px 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+footer a { color: var(--accent1); text-decoration: none; }
+
+/* ─── ANIMATIONS ──────────────────────────────────────── */
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── MOBILE NAV ──────────────────────────────────────── */
+@media (max-width: 600px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .resume-card { padding: 32px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Particle canvas -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">AJINKYA GADANKUSH</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#games">Games</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="assets/New_Resume2026.pdf" class="btn btn-primary" style="padding:10px 20px;font-size:0.85rem;">Resume ↓</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-badge">Available for new projects</div>
+  <h1 class="hero-name">AJINKYA</h1>
+  <p class="hero-sub">Game Developer,HTML5 Games</p>
+  <div class="hero-cta">
+    <a href="#games" class="btn btn-primary">🎮 View My Games</a>
+    <a href="#contact" class="btn btn-ghost">Get In Touch →</a>
+  </div>
+  <div class="hero-scroll">↓ scroll</div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div>
+      <div class="stat-num">200+</div>
+      <div class="stat-label">Games Shipped</div>
+    </div>
+    <div>
+      <div class="stat-num">6+</div>
+      <div class="stat-label">Years Experience</div>
+    </div>
+    <div>
+      <div class="stat-num">JS</div>
+      <div class="stat-label">Primary Language</div>
+    </div>
+    <div>
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Passion for Games</div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="reveal">
+    <div class="section-label">About</div>
+    <h2 class="section-title">Who am I?</h2>
+    <p class="section-desc">Passionate Game Developer focused on creating engaging gameplay experiences. Skilled in problem solving, teamwork, and continuous learning, seeking a challenging role to contribute to high-quality game development.</p>
+  </div>
+  <div class="about-grid reveal">
+    <div class="about-card">
+      <div class="about-card-icon icon-bg-1">🎮</div>
+      <h3>Game Development</h3>
+      <p>Building  games with Cocos Creator,Phaser,Construct 2, Construct 3, Create JS, Three JS — from concept to launch, I handle gameplay mechanics, UI, and performance.</p>
+    </div>
+    <div class="about-card">
+      <div class="about-card-icon icon-bg-2">⚡</div>
+      <h3>JavaScript Expert</h3>
+      <p>Fluent in JavaScript and TypeScript for game scripting, asynchronous logic, and building interactive UI systems within game engines</p>
+    </div>
+    <div class="about-card">
+      <div class="about-card-icon icon-bg-3">🎓</div>
+      <h3>Education</h3>
+      <p>Bachelor of Computer Applications (BCA) from Shivaji University, Kolhapur, 2011,Certification in HTML 5 from CMS Institute, Navi Mumbai, Vashi ,2016</p>
+    </div>
+    <div class="about-card">
+      <div class="about-card-icon icon-bg-4">🧠</div>
+      <h3>Game Design</h3>
+      <p>Focused on player psychology, level progression, and reward systems that keep players coming back for more.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="reveal">
+    <div class="section-label">Experience</div>
+    <h2 class="section-title">Where I've Worked</h2>
+    <p class="section-desc">Professional journey in game development.</p>
+  </div>
+  <div class="experience-timeline reveal">
+    <div class="experience-card">
+      <div class="experience-logo">🎮</div>
+      <div class="experience-content">
+        <div class="experience-role">Game Developer</div>
+        <div class="experience-company">Gamezop</div>
+        <div class="experience-duration">2022 - Present</div>
+        <ul style="margin-top:12px;padding-left:18px;color:var(--muted);font-size:0.9rem;line-height:1.8;">
+          <li>Developed and shipped 200+ HTML5 games using Cocos Creator, Phaser, and Construct</li>
+          <li>Implemented game mechanics, UI systems, and gameplay features</li>
+          <li>Optimized game performance for mobile and web platforms</li>
+          <li>Collaborated with cross-functional teams to deliver high-quality games</li>
+          <li>Maintained and improved existing games by fixing bugs, implementing new features, and revamping game design to enhance performance and player experience  </li>
+        </ul>
+      </div>
+    </div>
+    <!-- ---- -->
+    <div class="experience-card">
+      <div class="experience-logo">🎮</div>
+      <div class="experience-content">
+        <div class="experience-role">Game Developer</div>
+        <div class="experience-company">Yudiz Solutions pvt ltd, Ahmedabad, Gujrat </div>
+        <div class="experience-duration">2021 - Present</div>
+        <ul style="margin-top:12px;padding-left:18px;color:var(--muted);font-size:0.9rem;line-height:1.8;">
+          <li>Give training to new joiners.</li>
+          <li>Take technical and practical rounds of candidates.</li>
+          <li>Co ordinate with team.</li>
+          <li>Give timeline of new projects.</li>
+          <li>Assign projects to team member.</li>
+          <li>Take daily standups.</li>
+          <li>Developing HTML5 game by using Phaser 3.</li>
+          <li>Worked on API</li>
+          <li>Worked on soket io</li>
+          <li>Worked on firebase</li>
+          <li>Develop multiplayer game.</li>
+          <li>Develop clear and reusable code.</li>
+        </ul>
+      </div>
+    </div>
+    <!-- ----------- -->
+     <!-- ---- -->
+    <div class="experience-card">
+      <div class="experience-logo">🎮</div>
+      <div class="experience-content">
+        <div class="experience-role">Game Developer</div>
+        <div class="experience-company">JiniGuru softech(India) Pvt Ltd,Ahmedabad, Gujrat</div>
+        <div class="experience-duration">2021 - 2021</div>
+        <ul style="margin-top:12px;padding-left:18px;color:var(--muted);font-size:0.9rem;line-height:1.8;">
+          <li>Worked on HTML5 game.</li>
+          <li>Developing HTML5 game by using Phaser and pixi js.</li>
+          <li>Developing game for playable on all browsers and devices.</li>
+          <li>Develop reusable and clear structure code.</li>
+          <li>Testing the game</li>
+
+        </ul>
+      </div>
+    </div>
+    <!-- ----------- -->
+      <!-- ---- -->
+    <div class="experience-card">
+      <div class="experience-logo">🎮</div>
+      <div class="experience-content">
+        <div class="experience-role">Game Developer</div>
+        <div class="experience-company">WITS Intractive Pvt Ltd,Kandivali, Mumbai</div>
+        <div class="experience-duration">2020 - 2021</div>
+        <ul style="margin-top:12px;padding-left:18px;color:var(--muted);font-size:0.9rem;line-height:1.8;">
+          <li>Working on HTML5 canvas game by using Create.JS.</li>
+          <li>Developing E-learning games for years 02 to 03 years children.</li>
+          <li>Project: Tata Classedge</li>
+        </ul>
+      </div>
+    </div>
+    <!-- ---- -->
+    <div class="experience-card">
+      <div class="experience-logo">🎮</div>
+      <div class="experience-content">
+        <div class="experience-role">Game Developer</div>
+        <div class="experience-company">Axis Entertainment Ltd,Navi Mumbai, Maharashtra</div>
+        <div class="experience-duration">2018 - 2020</div>
+        <ul style="margin-top:12px;padding-left:18px;color:var(--muted);font-size:0.9rem;line-height:1.8;">
+          <li>Worked in HTML5 game using Create.JS.</li>
+<li>Fix bugs during development and in production</li> 
+<li>Resolved client problems, improved operations  and provided exceptional client support.</li>
+          <li>Implemented game mechanics, UI systems, and gameplay features</li>
+          <li>Optimized game performance for mobile and web platforms</li>
+          <li>Collaborated with cross-functional teams to deliver high-quality games</li>
+        </ul>
+      </div>
+    </div>
+    <!-- -------- -->
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="reveal">
+    <div class="section-label">Skills</div>
+    <h2 class="section-title">Tech Stack</h2>
+    <p class="section-desc">Tools and technologies I use to bring game ideas to life.</p>
+  </div>
+  <div class="skills-container reveal">
+    <div class="skill-row">
+      <div class="skill-chip chip-1">⚙️ Cocos Creator</div>
+      <div class="skill-chip chip-2">🟨 JavaScript</div>
+      <div class="skill-chip chip-3">📱 Mobile Development</div>
+    </div>
+    <div class="skill-row">
+      <div class="skill-chip chip-4">🎨 Game Design</div>
+      <div class="skill-chip chip-5">🔧 Game Mechanics</div>
+      <div class="skill-chip chip-6">📊 Level Design</div>
+    </div>
+    <div class="skill-row">
+      <div class="skill-chip chip-1">📦 Asset Pipeline</div>
+      <div class="skill-chip chip-3">🎵 Audio Integration</div>
+      <div class="skill-chip chip-2">🚀 Performance Optimization</div>
+      
+    </div>
+    <div class="skill-row">
+      <div class="skill-chip chip-4">🎯 Phaser 3</div>
+      <div class="skill-chip chip-4">🎯 Phaser 2</div>
+      <div class="skill-chip chip-5">🏗️ Construct 3</div>
+      <div class="skill-chip chip-6">🔨 Construct 2</div>
+      <div class="skill-chip chip-6">🔨 Pixi JS</div>
+    </div>
+    <div class="skill-row">
+      <div class="skill-chip chip-3">🖼️ Create.js</div>
+      <div class="skill-chip chip-2">🧊 Three.js</div>
+      <div class="skill-chip chip-1">🗂️ Git</div>
+      <div class="skill-chip chip-4">📈 Game Analytics</div>
+    </div>
+  </div>
+
+  <!-- Special Skill Highlight -->
+  <div class="ai-skill-card reveal" style="
+    margin-top: 32px;
+    background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(168,85,247,0.12), rgba(6,182,212,0.08));
+    border: 1px solid rgba(99,102,241,0.35);
+    border-radius: 20px;
+    padding: 28px 32px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  ">
+    <div style="
+      width: 56px; height: 56px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.7rem;
+      box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+    ">🤖</div>
+    <div>
+      <div style="
+        font-size: 0.72rem; font-weight: 700; letter-spacing: 2px;
+        text-transform: uppercase; color: #a5b4fc; margin-bottom: 8px;
+      ">✦ Special Skill</div>
+      <h3 style="font-family:'Space Grotesk',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text); margin-bottom:8px;">
+        AI-Powered Game Development
+      </h3>
+      <p style="font-size:0.92rem; color:var(--muted); line-height:1.75; max-width:640px;">
+        Skilled in leveraging AI tools to improve game development workflows, including
+        <span style="color:#a5b4fc;">coding assistance</span>,
+        <span style="color:#67e8f9;">asset generation</span>, and
+        <span style="color:#6ee7b7;">rapid problem solving</span> —
+        enabling faster iteration and higher-quality game output.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- GAMES -->
+<section id="games">
+  <div class="reveal">
+    <div class="section-label">Portfolio</div>
+    <h2 class="section-title">My Games</h2>
+    <p class="section-desc">HTML5 games I've designed, developed, and shipped.</p>
+  </div>
+  <div class="games-grid">
+
+    <!-- Game 1 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-1">
+        <img class="game-preview-img" src="https://static.gamezop.com/yVywAGBQ6/wall.png" alt="Bubble Shooter Classic thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji">🧩</span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags"> 
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">Cocos Creator</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Bubble Shooter Classic</h3>
+        <p>Bubble Shooter Classic online for free and pop colorful bubbles in this timeless arcade puzzle game. Aim carefully, match colors, and clear the board before the bubbles reach the bottom of your screen.
+
+</p>
+        <div class="game-meta">
+          <span>🎮 50+ Levels</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://www.gamezop.com/en/game/bubble-shooter-classic/yVywAGBQ6" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="#" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game 2 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2">
+        <img class="game-preview-img" src="https://static.gamezop.com/PdIZyZNAe/wall.png" alt="Dragon Annihilation thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji">🐉</span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">Cocos Creator</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Dragon Annihilation</h3>
+        <p>Dragon Annihilation is a free dragon game online where you defend your village from waves of attacking dragons using upgradeable turrets. </p>
+        <div class="game-meta">
+          <span>🎮 50+ Levels</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://www.gamezop.com/en/game/dragon-annihilation/PdIZyZNAe" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+ <!-- Game 3 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1a2e1a,#2d4a2d,#0f3d2e);">
+        <img class="game-preview-img" src="https://static.gamezop.com/Nr1P9rmbi/wall.png" alt="Harbor Dash thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji">⚓</span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Casual</span>
+          <span class="game-tag">Cocos Creator</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Harbor Dash</h3>
+        <p>Harbor Dash is a free harbor game online where you navigate your ship through challenging waters, avoiding obstacles and collecting treasures. </p>
+        <div class="game-meta">
+          <span>🌟 26 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://www.gamezop.com/en/game/harbor-dash/Nr1P9rmbi" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="#" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+     <!-- Game 4 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="https://static.gamezop.com/Cg8EBuMp7/wall.png" alt="Hill Top Tanks thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji">🚗</span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">Cocos Creator</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Hill Top Tanks</h3>
+        <p>Hill Top Tanks is a free tank game online where you navigate your tank through challenging terrains, avoiding obstacles and defeating enemies. </p>
+        <div class="game-meta">
+          <span>🌟 26 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://www.gamezop.com/en/game/hill-top-tanks/Cg8EBuMp7" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="H" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+     <!-- Game 4 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="https://static.gamezop.com/Umfd7yvMd/wall.png" alt="Hill Top Tanks thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji">🚗</span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">Cocos Creator</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Viking Siege</h3>
+        <p>Viking Siege is a free strategy game online where you lead your Viking warriors to conquer territories, build your village, and defeat enemies. </p>
+        <div class="game-meta">
+          <span>🌟 26 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://www.gamezop.com/en/game/viking-siege/Umfd7yvMd" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="H" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+     <!-- Game 4 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="https://static.gamezop.com/XxembtJs1/wall.png" alt="Hill Top Tanks thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji">🚗</span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">Cocos Creator</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Merge the Gems</h3>
+        <p>Merge the Gems is a free puzzle game online where you combine gems to create powerful combinations and solve challenging levels. </p>
+        <div class="game-meta">
+          <span>🌟 26 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://www.gamezop.com/en/game/merge-the-gems/XxembtJs1" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="H" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+    <!-- Game 4 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="https://static.gamezop.com/Bkozyhpmc0H/wall.png" alt="Hill Top Tanks thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji">🚗</span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">Cocos Creator</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Hop Kangaroo Hop</h3>
+        <p>Hop Kangaroo Hop is a free online runner game where you jump, dodge obstacles, and go as far as you can to beat your high score. </p>
+        <div class="game-meta">
+          <span>🌟 26 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://www.gamezop.com/en/game/hop-kangaroo-hop/Bkozyhpmc0H" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="H" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+    <!-- Game 4 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="https://static.gamezop.com/H1Hgyn6XqAS/wall.png" alt="Hill Top Tanks thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji">🚗</span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Puzzle</span>
+          <span class="game-tag">Cocos Creator</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Carrom Hero</h3>
+        <p>Carrom Hero is a free online board game where you aim, strike, and pocket coins to master skills and win challenging matches </p>
+        <div class="game-meta">
+          <span>🌟 26 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://www.gamezop.com/en/game/carrom-hero/H1Hgyn6XqAS" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="H" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+    <!-- Game 5 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="assets/Rummy.webp"Rummy 24 thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji"></span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Card Game</span>
+          <span class="game-tag">Phaser 3</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Rummy 24</h3>
+        <p>Rummy 24 is a free rummy game online where you navigate your tank through challenging terrains, avoiding obstacles and defeating enemies. </p>
+        <div class="game-meta">
+          <span>🌟 26 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="#" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="H" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+    <!-- Game 6 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="assets/Rummy.webp" alt="Poker Lion thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji"></span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Card Game</span>
+          <span class="game-tag">Phaser 3</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Poker Lion</h3>
+        <p>Poker Lion is a free poker game online where you navigate your tank through challenging terrains, avoiding obstacles and defeating enemies. </p>
+        <div class="game-meta">
+          <span>🌟 26 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="#" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="H" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+    <!-- Game 7 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="assets/bhBedTime.png" alt="Poker Lion thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji"></span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Educational</span>
+          <span class="game-tag">Create JS</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Baby Hazel Bed Time</h3>
+        <p>Baby Hazel Bed Time is a free online game where you help Baby Hazel complete her bedtime routine, ensuring she sleeps peacefully. </p>
+        <div class="game-meta">
+          <span>🌟 4 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://www.babyhazelgames.com/games/baby-hazel-bed-time.html" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="H" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+     <!-- Game 7 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="assets/bhSiblingTrouble.png" alt="Baby Hazel Sibling Trouble thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji"></span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Educational</span>
+          <span class="game-tag">Create JS</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Baby Hazel Sibling Trouble</h3>
+        <p>Baby Hazel Sibling Trouble is a free online game where you help Baby Hazel manage her sibling's antics and complete her daily tasks. </p>
+        <div class="game-meta">
+          <span>🌟 4 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://www.babyhazelgames.com/games/baby-hazel-sibling-trouble.html " class="game-link game-link-primary">▶ Play Now</a>
+          <a href="H" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+     <!-- Game 8 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="assets/bhValentinesDay.png" alt="baby-hazel-valentines-day thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji"></span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Educational</span>
+          <span class="game-tag">Create JS</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Baby Hazel Valentine's Day</h3>
+        <p>Baby Hazel Valentine's Day is a free online game where you help Baby Hazel celebrate Valentine's Day with her friends and family. </p>
+        <div class="game-meta">
+          <span>🌟 4 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://www.babyhazelgames.com/games/baby-hazel-valentines-day.html" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="H" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+    <!-- Game 9 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="assets/omelette.png" alt="Omelette thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji"></span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Cooking Game</span>
+          <span class="game-tag">Create JS</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Omelette</h3>
+        <p>Omelette is a free online game where you help Baby Hazel cook delicious omelettes and complete various cooking challenges. </p>
+        <div class="game-meta">
+          <span>🌟 4 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://www.babyhazelgames.com/games/omelette.html" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="https://www.babyhazelgames.com/games/omelette.html" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+    <!-- Game 10 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="assets/tortas.png" alt="Tortas thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji"></span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Cooking Game</span>
+          <span class="game-tag">Create JS</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Tortas</h3>
+        <p>Tortas is a free online game where you help Baby Hazel cook delicious tortas and complete various cooking challenges. </p>
+        <div class="game-meta">
+          <span>🌟 4 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://www.babyhazelgames.com/cooking-games/tortas.html" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="https://www.babyhazelgames.com/cooking-games/tortas.html" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+    <!-- Game 10 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="assets/baby-hazel-air-hostess-dressup.png" alt="Baby Hazel Air Hostess Dressup thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji"></span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Dress Up Game</span>
+          <span class="game-tag">Create JS</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>Baby Hazel Air Hostess Dressup</h3>
+        <p>Baby Hazel Air Hostess Dressup is a free online game where you help Baby Hazel dress up as an air hostess and complete various fashion challenges. </p>
+        <div class="game-meta">
+          <span>🌟 4 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://www.babyhazelgames.com/games/baby-hazel-air-hostess-dressup.html" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="https://www.babyhazelgames.com/games/baby-hazel-air-hostess-dressup.html" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+    <!-- Game 11 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="assets/tobeenottobe.png" alt="tobeenottobe thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji"></span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Quiz Game</span>
+          <span class="game-tag">Phaser 3</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>tobeenottobe</h3>
+        <p>tobeenottobe is a free online quiz game . </p>
+        <div class="game-meta">
+          <span>🌟 4 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://genieee.com/games/html5/disposable/tobeenottobe/" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="https://genieee.com/games/html5/disposable/tobeenottobe/" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+    <!-- Game 12 -->
+    <div class="game-card reveal">
+      <div class="game-preview game-preview-2" style="background:linear-gradient(135deg,#1c1a0f,#3d3010,#2e1f06);">
+        <img class="game-preview-img" src="assets/theloastspecies.png" alt="theloastspecies thumbnail" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="game-preview-emoji"></span>
+        <span class="floating-preview-badge">LIVE</span>
+      </div>
+      <div class="game-body">
+        <div class="game-tags">
+          <span class="game-tag">Quiz Game</span>
+          <span class="game-tag">Phaser 3</span>
+          <span class="game-tag">HTML 5</span>
+        </div>
+        <h3>theloastspecies</h3>
+        <p>theloastspecies is a free online card game. </p>
+        <div class="game-meta">
+          <span>🌟 4 Lessons</span>
+          <span>On all platforms</span>
+        </div>
+        <div class="game-links">
+          <a href="https://genieee.com/games/html5/disposable/theloastspecies/" class="game-link game-link-primary">▶ Play Now</a>
+          <a href="https://genieee.com/games/html5/disposable/theloastspecies/" class="game-link game-link-secondary">🔗 Details</a>
+        </div>
+      </div>
+    </div>
+    <!----->
+  </div>
+</section>
+
+<!-- RESUME -->
+<section id="resume">
+  <div class="resume-card reveal">
+    <div class="resume-icon">📄</div>
+    <h2 class="section-title" style="margin-bottom:8px;">Download Resume</h2>
+    <p style="color:var(--muted);max-width:420px;line-height:1.7;font-size:0.95rem;">Get the full details of my experience, projects, and skills in PDF format.</p>
+    <a href="assets/New_Resume2026.pdf" class="btn btn-primary" style="margin-top:10px;">⬇ Download PDF</a>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="reveal">
+    <div class="section-label">Contact</div>
+    <h2 class="section-title">Let's Connect</h2>
+    <p class="section-desc">Open to collaborations, freelance projects, and full-time opportunities.</p>
+  </div>
+  <div class="contact-grid reveal">
+    <a href="mailto:your@email.com" class="contact-item">
+      <div class="contact-icon" style="background:rgba(99,102,241,0.2);">✉️</div>
+      <div>
+        <div class="contact-label">Email</div>
+        <div class="contact-value">ajinkyagadankush@yahoo.com</div>
+      </div>
+    </a>
+   
+    <a href="#" class="contact-item">
+      <div class="contact-icon" style="background:rgba(6,182,212,0.2);">💼</div>
+      <div>
+        <div class="contact-label">LinkedIn</div>
+        <div class="contact-value">linkedin.com/in/ajinkya</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 <a href="#">Ajinkya</a> · Game Developer · Built with ❤️</p>
+</footer>
+
+<script>
+/* ─── PARTICLE CANVAS ─────────────────────────────────── */
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 1.5 + 0.5;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    const c = ['rgba(99,102,241,', 'rgba(168,85,247,', 'rgba(6,182,212,', 'rgba(244,63,94,'];
+    this.color = c[Math.floor(Math.random() * c.length)] + (Math.random() * 0.5 + 0.1) + ')';
+  }
+  update() {
+    this.x += this.speedX; this.y += this.speedY;
+    if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+function drawLines() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const d = Math.sqrt(dx*dx + dy*dy);
+      if (d < 100) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(99,102,241,${0.06 * (1 - d/100)})`;
+        ctx.lineWidth = 0.5;
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => { p.update(); p.draw(); });
+  drawLines();
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* ─── SCROLL REVEAL ───────────────────────────────────── */
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1 });
+reveals.forEach(r => observer.observe(r));
+</script>
+</body>
+</html>
