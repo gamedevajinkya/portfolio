@@ -529,6 +529,96 @@ section {
   gap: 24px;
 }
 
+.tool-spotlight {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
+  gap: 30px;
+  padding: 30px;
+  background: linear-gradient(120deg, rgba(6,182,212,0.11), rgba(99,102,241,0.1) 52%, rgba(244,63,94,0.08));
+  border: 1px solid rgba(103,232,249,0.25);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.tool-spotlight::before {
+  content: '';
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  right: -100px;
+  top: -130px;
+  border: 1px solid rgba(103,232,249,0.2);
+  border-radius: 50%;
+  box-shadow: 0 0 0 26px rgba(103,232,249,0.03), 0 0 0 52px rgba(103,232,249,0.02);
+  pointer-events: none;
+}
+
+.pattern-preview {
+  min-height: 280px;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  background: rgba(5,5,15,0.45);
+}
+
+.bubble-board {
+  width: min(100%, 330px);
+  aspect-ratio: 1.18;
+  padding: 22px 18px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-content: start;
+  gap: 7px;
+  background: linear-gradient(145deg, #172554, #0f3b55);
+  border: 1px solid rgba(103,232,249,0.35);
+  border-radius: 14px 14px 28px 28px;
+  box-shadow: 0 18px 38px rgba(0,0,0,0.3), inset 0 0 26px rgba(6,182,212,0.15);
+  transform: perspective(600px) rotateX(8deg) rotateZ(-2deg);
+}
+
+.bubble {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.45);
+  box-shadow: inset 4px 4px 8px rgba(255,255,255,0.35), 0 5px 10px rgba(0,0,0,0.25);
+}
+
+.bubble-blue { background: radial-gradient(circle at 30% 25%, #a5f3fc, #0891b2 58%, #164e63); }
+.bubble-pink { background: radial-gradient(circle at 30% 25%, #fecdd3, #e11d48 58%, #881337); }
+.bubble-yellow { background: radial-gradient(circle at 30% 25%, #fef08a, #eab308 58%, #854d0e); }
+.bubble-green { background: radial-gradient(circle at 30% 25%, #bbf7d0, #16a34a 58%, #14532d); }
+.bubble-purple { background: radial-gradient(circle at 30% 25%, #e9d5ff, #9333ea 58%, #581c87); }
+.bubble-empty { opacity: 0; }
+
+.tool-details { position: relative; z-index: 1; }
+.tool-details .game-tags { margin-bottom: 14px; }
+.tool-details h3 { font-size: clamp(1.45rem, 3vw, 2rem); margin-bottom: 12px; }
+.tool-details p { max-width: 620px; }
+
+.tool-points {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 18px;
+  margin: 0 0 22px;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.tool-points li::before { content: '✦'; color: var(--accent3); margin-right: 8px; }
+
+@media (max-width: 700px) {
+  .tool-spotlight { grid-template-columns: 1fr; padding: 20px; }
+  .tool-points { grid-template-columns: 1fr; }
+}
+
 .game-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1137,6 +1227,37 @@ footer a { color: var(--accent1); text-decoration: none; }
     <p class="section-desc">HTML5 games I've designed, developed, and shipped.</p>
   </div>
   <div class="games-grid">
+
+    <!-- Tool spotlight -->
+    <article class="tool-spotlight reveal">
+      <div class="pattern-preview" aria-label="Bubble Shooter level pattern preview">
+        <div class="bubble-board">
+          <span class="bubble bubble-blue"></span><span class="bubble bubble-blue"></span><span class="bubble bubble-pink"></span><span class="bubble bubble-pink"></span><span class="bubble bubble-yellow"></span><span class="bubble bubble-yellow"></span><span class="bubble bubble-green"></span>
+          <span class="bubble bubble-blue"></span><span class="bubble bubble-purple"></span><span class="bubble bubble-pink"></span><span class="bubble bubble-pink"></span><span class="bubble bubble-yellow"></span><span class="bubble bubble-green"></span><span class="bubble bubble-green"></span>
+          <span class="bubble bubble-empty"></span><span class="bubble bubble-purple"></span><span class="bubble bubble-purple"></span><span class="bubble bubble-blue"></span><span class="bubble bubble-blue"></span><span class="bubble bubble-green"></span><span class="bubble bubble-empty"></span>
+          <span class="bubble bubble-empty"></span><span class="bubble bubble-empty"></span><span class="bubble bubble-pink"></span><span class="bubble bubble-pink"></span><span class="bubble bubble-yellow"></span><span class="bubble bubble-empty"></span><span class="bubble bubble-empty"></span>
+        </div>
+      </div>
+      <div class="tool-details">
+        <div class="game-tags">
+          <span class="game-tag">Developer Tool</span>
+          <span class="game-tag">Bubble Shooter</span>
+          <span class="game-tag">Level Design</span>
+        </div>
+        <h3>Bubble Shooter Pattern Creator</h3>
+        <p>A custom tool I created to help game designers build, preview, and refine Bubble Shooter level patterns faster. Designers can arrange bubble colors into playable formations and iterate on level ideas without manually editing game data.</p>
+        <ul class="tool-points">
+          <li>Create and arrange bubble patterns visually</li>
+          <li>Preview formations before implementation</li>
+          <li>Support faster level balancing and iteration</li>
+          <li>Reduce repetitive designer-to-developer handoff</li>
+        </ul>
+        <div class="game-meta">
+          <span>Built for designers</span>
+          <span>Workflow focused</span>
+        </div>
+      </div>
+    </article>
 
     <!-- Game 1 -->
     <div class="game-card reveal">
